@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>seAnim</title>
+    <script src="js/three.min.js" charset="utf-8"></script>
+    <script src="js/OBJLoader.js" charset="utf-8"></script>
+    <script src="js/TrackballControls.js" charset="utf-8"></script>
+    <script src="js/DDSLoader.js" charset="utf-8"></script>
+    <style>
+    body{
+      padding: 0;
+      margin: 0;
+    }
+    </style>
+  </head>
+  <body>
+    <script>
+      var scene, camera, render
+
+      //container
+      var container = document.createElement('div');
+      document.body.appendChild(container);
+
+      WC=520;
+      HC=400;
+
+      //scene+camera
+      scene = new THREE.Scene(); //создание сценыы
+      camera = new THREE.PerspectiveCamera(25, (window.innerWidth)/HC,1,1000 ); //создание камеры
+            camera.position.x = 0;
+            camera.position.y = -100;
+            camera.position.z = 50;
+
+      //controls
+      var controls = new THREE.TrackballControls( camera );//управление камерой
+      controls.rotateSpeed = 2.0;
+            controls.zoomSpeed = 1.2;
+            controls.panSpeed = 0.8;
+
+      //render
+      render = new THREE.WebGLRenderer({antialias: true}); //добавление рендера
+      render.setSize(window.innerWidth,window.innerHeight); //размер рендера
+      container.appendChild(render.domElement); //добавление рендера
+
+      //lights
+      var light = new THREE.DirectionalLight( 0xfff7e8, 0.5); //направленный свет
+      scene.add(light)
+
+      var amColor = '#faffe3';
+      var amLight = new THREE.AmbientLight(amColor); //рассеянный свет
+      scene.add(amLight);
+
+            Nx=2000; Ny=Nx; W=20; Wb=6; Scale=0.02; Y=0; 
+            funtex="http://livelab.spb.ru/labs/files/glass.png";
+            border="http://livelab.spb.ru/labs/files/glassbig.png";
+
+      //animation
+      var flag = false;
+      var Max = 0;
+            var funtexture = new THREE.TextureLoader().load(funtex);
+
+      function animation(){
+
+            Mx=0; My=0;
+            var fungeom = new THREE.PlaneGeometry(Nx,Ny,99,99);
+            var funmatr = new THREE.MeshPhongMaterial({ map: funtexture });
+            for (var j = 0; j < fungeom.vertices.length; j++) {
+            if (Math.abs(fungeom.vertices[j].x)>Mx) Mx=Math.abs(fungeom.vertices[j].x);
+            if (Math.abs(fungeom.vertices[j].y)>My) My=Math.abs(fungeom.vertices[j].y);
+            }
+            for (var j = 0; j < fungeom.vertices.length; j++) {
+             z=fungeom.vertices[j].z;
+             x=fungeom.vertices[j].x/Mx;
+             y=fungeom.vertices[j].y/My;
+             fungeom.vertices[j].z = z + Max*Math.cos(2*Math.PI*x)*Math.cos(2*Math.PI*y);
+            }
+
+            var fun = new THREE.Mesh(fungeom, funmatr);
+            fun.scale.set(Scale,Scale,Scale);
+            fun.position.set(0,Y,0);
+            fun.castShadow = true;
+            scene.add(fun);
+
+
+
+        if (!flag){
+          if (Max != 100){
+            Max += 5;
+          }else{
+            flag = true;
+          }
+        }else{
+          if (Max != -100){
+            Max -= 5;
+          }else{
+            flag = false;
+          }
+        }
+      };
+
+      function rendering(){
+        requestAnimationFrame(rendering)
+        animation();
+        controls.update();
+        render.render(scene,camera);
+      }
+
+      rendering();
+    </script>
+  </body>
+</html>
