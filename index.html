@@ -27,7 +27,7 @@
 
 			//scene+camera
 			scene = new THREE.Scene(); //создание сценыы
-			camera = new THREE.PerspectiveCamera(25, (window.innerWidth)/HC,1,1000 ); //создание камеры
+			camera = new THREE.PerspectiveCamera(25, (window.innerWidth)/HC,1,900 ); //создание камеры
             camera.position.x = 0;
             camera.position.y = -100;
             camera.position.z = 50;
@@ -51,15 +51,19 @@
 			var amLight = new THREE.AmbientLight(amColor); //рассеянный свет
 			scene.add(amLight);
 
-
             Nx=2000; Ny=Nx; W=20; Wb=6; Scale=0.02; Y=0; 
 
             funtex="http://livelab.spb.ru/labs/files/glass.png";
-
+            var funtexture = new THREE.TextureLoader().load(funtex);
 			//animation
 			var flag = false;
 			var Max = 0;
-			var funtexture = new THREE.TextureLoader().load(funtex);
+
+			function rendering(){
+				requestAnimationFrame(rendering)
+				animation();
+				controls.update();
+			}
 
 			function animation(){
 
@@ -81,9 +85,13 @@
             fun.scale.set(Scale,Scale,Scale);
             fun.position.set(0,Y,0);
             fun.castShadow = true;
-            fun.name="volna"
-            scene.remove(scene.getChildByName("volna"));
+
             scene.add(fun);
+
+            render.render(scene,camera);
+            scene.remove(fun);
+            fungeom.dispose();
+            funmatr.dispose();
 
 				if (!flag){
 					if (Max != 100){
@@ -100,12 +108,6 @@
 				}
 			};
 
-			function rendering(){
-				requestAnimationFrame(rendering)
-				animation();
-				controls.update();
-				render.render(scene,camera);
-			}
 			rendering();
 		</script>
 	</body>
