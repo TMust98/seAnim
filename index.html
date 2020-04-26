@@ -42,34 +42,32 @@
 			render = new THREE.WebGLRenderer({antialias: true}); //добавление рендера
 			render.setSize(window.innerWidth,window.innerHeight); //размер рендера
 			container.appendChild(render.domElement); //добавление рендера
+            
+            //ligts
+            var spotLight = new THREE.SpotLight( 0xffffff );
+            spotLight.position.set( 0, 0, 50 );
+            spotLight.castShadow = true;
+            scene.add( spotLight );
 
-			//lights
-			var light = new THREE.DirectionalLight( 0xfff7e8, 0.5); //направленный свет
-			scene.add(light)
+            var spotLight1 = new THREE.SpotLight( 0xddffdd );
+            spotLight1.position.set( 0, 250, 10 );
+            spotLight1.castShadow = false;
+            scene.add( spotLight1 );
 
-			var amColor = '#faffe3';
-			var amLight = new THREE.AmbientLight(amColor); //рассеянный свет
-			scene.add(amLight);
 
+            //animation
             Nx=2000; Ny=Nx; W=20; Wb=6; Scale=0.02; Y=0; 
 
             funtex="http://livelab.spb.ru/labs/files/glass.png";
             var funtexture = new THREE.TextureLoader().load(funtex);
-			//animation
 			var flag = false;
 			var Max = 0;
 
-			function rendering(){
-				requestAnimationFrame(rendering)
-				animation();
-				controls.update();
-			}
-
-			function animation(){
+        function animation(){
 
             Mx=0; My=0;
             var fungeom = new THREE.PlaneGeometry(Nx,Ny,99,99);
-            var funmatr = new THREE.MeshPhongMaterial({ map: funtexture });
+            var funmatr = new THREE.MeshBasicMaterial({ map: funtexture, side: THREE.DoubleSide});
             for (var j = 0; j < fungeom.vertices.length; j++) {
             if (Math.abs(fungeom.vertices[j].x)>Mx) Mx=Math.abs(fungeom.vertices[j].x);
             if (Math.abs(fungeom.vertices[j].y)>My) My=Math.abs(fungeom.vertices[j].y);
@@ -106,7 +104,13 @@
 						flag = false;
 					}
 				}
-			};
+        };
+
+			function rendering(){
+				requestAnimationFrame(rendering)
+				animation();
+				controls.update();
+			}
 
 			rendering();
 		</script>
